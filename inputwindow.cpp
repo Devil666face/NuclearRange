@@ -123,7 +123,7 @@ void InputWindow::on_pushButton_enter()
     blast.q = ui->comboBox_q->currentText().toDouble();
     blast.date_time = ui->dateTimeEdit->dateTime();
     blast.vh_wind = value_list[0][value_list[0].size()-1];
-    blast.alfa_wind = value_list[1][value_list[1].size()-1];
+    blast.alfa_wind = 360-value_list[1][value_list[1].size()-1];
     emit send_blast_data(blast);
     this->close();
 }

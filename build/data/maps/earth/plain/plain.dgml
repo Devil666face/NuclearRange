@@ -22,7 +22,7 @@
     
             <zoom>
                 <minimum>   900  </minimum>
-                <maximum>  2100  </maximum>
+                <maximum>  2700  </maximum>
     
                 <!-- describes whether you can zoom trough the levels
                     continuously -->

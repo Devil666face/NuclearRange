@@ -6,7 +6,7 @@ MainWindow::MainWindow(QWidget *parent)
     , ui(new Ui::MainWindow)
 {
     ui->setupUi(this);
-
+    ui->frame_pane->hide();
     create_button_input(create_button(":/new/prefix1/icons/edit.gif","Нажмите для ввода исходных данных",64));
     create_button_settings(create_button(":/new/prefix1/icons/settings.gif","Нажмите для изменения параметров отображения карты",64));
     load_map(ui->map_lay,"earth/plain/plain.dgml",0);

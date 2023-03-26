@@ -26,6 +26,8 @@
 //#include <GeoDataPolygon.h>
 //#include <QColor>
 
+#include <QPair>
+#include <cmath>
 #include <QGeoShape>
 #include <GeoDataLatLonBox.h>
 #include <GeoDataPlacemark.h>
@@ -60,8 +62,17 @@ public:
     bool draw_zone = false;
     BlastMath blast;
     MarbleWidget* map;
+
+private:
     void draw_zone_list(GeoPainter* painter, QList<Ellipse> ellipse_list);
-    void set_pen(GeoPainter* painter, QColor qolor);
+    void set_pen(GeoPainter* painter, QColor color_pen, QColor color_brush);
+    QVector<QPair<qreal,qreal>> getEllipseCoords(qreal centerX, qreal centerY, qreal a, qreal b, qreal rotationAngle, int numPoints);
+    QPair<qreal, qreal> get_coords_for_offset(qreal x, qreal y, qreal distance, qreal angle);
+    void draw_ellipse(GeoPainter* painter, BlastMath blast, Ellipse ellipse);
+    qreal km_to_deg(qreal km_value, qreal lat_in_rad);
+    qreal km_to_deg(qreal km_value);
+    qreal deg_to_rad(qreal deg);
+    qreal rad_to_deg(qreal rad);
 };
 
 #endif // MAPLAYER_H
