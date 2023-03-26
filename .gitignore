@@ -1,0 +1,3 @@
+/build/moc*.o
+/build/moc*.cpp
+/build/*.o
