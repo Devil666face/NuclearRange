@@ -16,23 +16,14 @@ public:
     QMovie *movie;
 
 private:
-    QString no_push_style = QString("background-color: qlineargradient(spread:repeat, x1:0.486, y1:0, x2:0.505, y2:1, stop:0.00480769 rgba(170, 0, 0, 255),stop:1 rgba(122, 0, 0, 255));"
-                            "color: #ffffff;"
-                            "font-weight: bold;"
-                            "border-style: solid;"
-                            "border-width: 1px;"
-                            "border-radius: 3px;"
-                            "border-color: #051a39;"
-                            "padding: 5px;");
-    QString push_style = QString("background-color: #880000;"
-                                "color: #ffffff;"
-                                "border-style: solid;"
-                                "border-width: 2px;"
-                                "border-radius: 3px;"
-                                "border-color: #000000;"
-                                "padding: 5px;"
-                                );
-
+    QString no_push_style = QString("background-color: qlineargradient(spread:repeat, x1:1, y1:0, x2:1, y2:1, stop:0 rgba(184, 184, 184, 255),stop:1 rgba(159, 159, 159, 255));"
+                                    "color: #000;"
+                                    "border-style: solid;"
+                                    "border-width: 1px;"
+                                    "border-color: #051a39;"
+                                    "padding: 5px;");
+    QString push_style = QString("background-color: rgba(70,162,218,50%);"
+                                 "border: 1px solid #46a2da;");
 signals:
     void clicked();
 

@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 {
     QApplication a(argc, argv);
     //QSS
-    QFile styleSheetFile(":/new/prefix1/Adaptic.qss");
+    QFile styleSheetFile(":/new/prefix1/Integrid.qss");
     styleSheetFile.open(QFile::ReadOnly);
     QString styleSheet = QLatin1String(styleSheetFile.readAll());
     a.setStyleSheet(styleSheet);

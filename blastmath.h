@@ -22,8 +22,8 @@ public:
     BlastMath();
 
     Type type = Ground;
-    qreal lon;
-    qreal lat;
+    qreal lon=-1;
+    qreal lat=-1;
     qreal q = 0.1;
     qreal vh_wind = 10;
     qreal alfa_wind = 0;

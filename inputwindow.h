@@ -4,6 +4,7 @@
 #include <QMainWindow>
 #include <QTableWidget>
 #include <QComboBox>
+#include <QMessageBox>
 #include <QDoubleSpinBox>
 #include <QGridLayout>
 #include <QDateTimeEdit>
@@ -36,6 +37,7 @@ public:
     void create_button_coor(AnimatedLabel* button);
     void set_max_q(Type type, QComboBox*& comboBox);
     QList<QList<qreal>> get_values_from_tableWidget(QTableWidget*& tableWidget);
+    bool check_coor(BlastMath blast);
 
 private slots:
     void on_comboBox_type_currentIndexChanged(int index);

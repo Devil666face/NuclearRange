@@ -27,16 +27,23 @@ MapLayer::~MapLayer()
 void MapLayer::draw_zone_list(GeoPainter* painter, QList<Ellipse> ellipse_list)
 {
     if (!draw_zone) return;
-    set_pen(painter, QColor(Qt::red), QColor(255, 0, 0, 20));
-    foreach (auto ellipse, ellipse_list) {
-        draw_ellipse(painter, blast, ellipse);
+    for (int i=0;i<ellipse_list.size();i++) {
+        set_color_for_zone(painter, i);
+        draw_ellipse(painter, blast, ellipse_list[i]);
     }
 }
 
-void MapLayer::set_pen(GeoPainter *painter, QColor color_pen, QColor color_brush)
+void MapLayer::set_painter_color(GeoPainter *painter, QColor main_color)
 {
-    painter->setPen(QPen(color_pen, 2));
-    painter->setBrush(QBrush(color_brush));
+    painter->setPen(QPen(main_color, 2));
+    painter->setBrush(QBrush(QColor(main_color.red(),main_color.green(),main_color.blue(), 20)));
+}
+
+void MapLayer::set_color_for_zone(GeoPainter *painter, int zone_index)
+{
+    QList<QColor> color_list;
+    color_list<<QColor(255,0,0)<<QColor(0,0,255)<<QColor(0,255,0)<<QColor(150,75,0);
+    set_painter_color(painter, color_list[zone_index]);
 }
 
 QVector<QPair<qreal,qreal>> MapLayer::getEllipseCoords(qreal centerX, qreal centerY, qreal a, qreal b, qreal rotationAngle, int numPoints)

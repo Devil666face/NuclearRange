@@ -65,7 +65,8 @@ public:
 
 private:
     void draw_zone_list(GeoPainter* painter, QList<Ellipse> ellipse_list);
-    void set_pen(GeoPainter* painter, QColor color_pen, QColor color_brush);
+    void set_painter_color(GeoPainter* painter, QColor main_color);
+    void set_color_for_zone(GeoPainter* painter, int zone_index);
     QVector<QPair<qreal,qreal>> getEllipseCoords(qreal centerX, qreal centerY, qreal a, qreal b, qreal rotationAngle, int numPoints);
     QPair<qreal, qreal> get_coords_for_offset(qreal x, qreal y, qreal distance, qreal angle);
     void draw_ellipse(GeoPainter* painter, BlastMath blast, Ellipse ellipse);

@@ -1,9 +1,9 @@
 <RCC>
     <qresource prefix="/new/prefix1">
-        <file>Adaptic.qss</file>
-        <file>icons/edit.gif</file>
-        <file>icons/settings.gif</file>
+        <file>Integrid.qss</file>
         <file>icons/add.gif</file>
         <file>icons/coor.gif</file>
+        <file>icons/edit.gif</file>
+        <file>icons/settings.gif</file>
     </qresource>
 </RCC>

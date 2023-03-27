@@ -110,6 +110,21 @@ QList<QList<qreal> > InputWindow::get_values_from_tableWidget(QTableWidget *&tab
     return row_list;
 }
 
+bool InputWindow::check_coor(BlastMath blast)
+{
+    if ((blast.lon!=-1) && (blast.lat!=-1)) return true;
+    QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning,
+                                          "Ввод координат",
+                                          "Координаты взрыва не заданы. Вы действительно хотите продолжить?",
+                                          QMessageBox::Yes| QMessageBox::No);
+    if(msgBox->exec() == QMessageBox::Yes)
+    {
+        return true;
+    }
+    delete msgBox;
+    return false;
+}
+
 void InputWindow::on_comboBox_type_currentIndexChanged(int index)
 {
     blast.set_type(index);
@@ -118,6 +133,7 @@ void InputWindow::on_comboBox_type_currentIndexChanged(int index)
 
 void InputWindow::on_pushButton_enter()
 {
+    if (!check_coor(blast)) return;
     QList<QList<qreal>> value_list = get_values_from_tableWidget(ui->tableWidget_weater);
     blast.set_type(ui->comboBox_type->currentIndex());
     blast.q = ui->comboBox_q->currentText().toDouble();
