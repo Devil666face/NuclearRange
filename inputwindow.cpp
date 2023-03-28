@@ -92,8 +92,6 @@ void InputWindow::set_max_q(Type type, QComboBox *&comboBox)
         comboBox->clear();
         comboBox->addItems(normal_q_range.mid(0,10));
     }
-
-
 }
 
 QList<QList<qreal> > InputWindow::get_values_from_tableWidget(QTableWidget *&tableWidget)
@@ -135,11 +133,12 @@ void InputWindow::on_pushButton_enter()
 {
     if (!check_coor(blast)) return;
     QList<QList<qreal>> value_list = get_values_from_tableWidget(ui->tableWidget_weater);
-    blast.set_type(ui->comboBox_type->currentIndex());
-    blast.q = ui->comboBox_q->currentText().toDouble();
-    blast.date_time = ui->dateTimeEdit->dateTime();
-    blast.vh_wind = value_list[0][value_list[0].size()-1];
-    blast.alfa_wind = 360-value_list[1][value_list[1].size()-1];
+    blast.set(ui->comboBox_type->currentIndex(), ui->comboBox_q->currentText().toDouble(), ui->dateTimeEdit->dateTime(), value_list[0][value_list[0].size()-1], 360-value_list[1][value_list[1].size()-1]);
+//    blast.set_type(ui->comboBox_type->currentIndex());
+//    blast.q = ui->comboBox_q->currentText().toDouble();
+//    blast.date_time = ui->dateTimeEdit->dateTime();
+//    blast.vh_wind = value_list[0][value_list[0].size()-1];
+//    blast.alfa_wind = 360-value_list[1][value_list[1].size()-1];
     emit send_blast_data(blast);
     this->close();
 }

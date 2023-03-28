@@ -45,6 +45,7 @@ private:
 
 private slots:
     void mouse_move_on_map(QString string);
+    void zoom_map(int zoom);
     void closeEvent(QCloseEvent* event);
     void on_pushButton_input();
     void on_pushButton_settings();

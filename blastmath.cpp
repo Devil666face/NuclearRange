@@ -36,26 +36,26 @@ int BlastMath::get_max_v_wind_index(qreal q)
     return 4;
 }
 
-void BlastMath::set_type(int index)
+Type BlastMath::set_type(int index)
 {
     switch (index) {
     case 0:
-        type = Air;
+        return Air;
         break;
     case 1:
-        type = Ground;
+        return Ground;
         break;
     case 2:
-        type = Overwather;
+        return Overwather;
         break;
     case 3:
-        type = Underwather;
+        return Underwather;
         break;
     case 4:
-        type = Underground;
+        return Underground;
         break;
     default:
-        type = Ground;
+        return Ground;
         break;
     }
 }
@@ -90,7 +90,44 @@ void BlastMath::print()
     qDebug()<<"date_time"<<date_time;
     qDebug()<<"lon"<<lon;
     qDebug()<<"lat"<<lat;
+    qDebug()<<"legend"<<legend;
     foreach (auto ellipse, ellipse_list) {
         ellipse.print();
     }
 }
+
+void BlastMath::set(int _type_index, qreal _q, QDateTime _date_time, qreal _vh_wind, qreal _alfa_wind)
+{
+    type = set_type(_type_index);
+    q = _q;
+    date_time = _date_time;
+    vh_wind = _vh_wind;
+    alfa_wind = _alfa_wind;
+    legend = set_legend(type, _q, _date_time);
+}
+
+QStringList BlastMath::set_legend(Type _type, qreal _q, QDateTime _date_time)
+{
+    QStringList legend;
+    legend<<QString("%1-%2").arg(_q).arg(get_letter_for_legend(_type));
+    legend<<QString("%1.%2 %3.%4").arg(_date_time.time().hour()).arg(_date_time.time().minute()).arg(_date_time.date().day()).arg(_date_time.date().month());
+    return legend;
+}
+
+QString BlastMath::get_letter_for_legend(Type _type)
+{
+    switch (_type) {
+    case Air:
+        return "В";
+    case Ground:
+        return "Н";
+    case Overwather:
+        return "ВП";
+    case Underwather:
+        return "ПВ";
+    case Underground:
+        return "П";
+    }
+    return "Н";
+}
+

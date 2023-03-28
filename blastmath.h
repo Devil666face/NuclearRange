@@ -29,13 +29,16 @@ public:
     qreal alfa_wind = 0;
     QDateTime date_time;
     QList<Ellipse> ellipse_list;
+    QStringList legend;
 
     int get_zone_id_for_q(qreal q);
     int get_max_v_wind_index(qreal q);
-    void set_type(int index);
+    Type set_type(int index);
     int get_type_index();
     void print();
-
+    void set(int _type_index, qreal _q, QDateTime _date_time, qreal _vh_wind, qreal _alfa_wind);
+    QStringList set_legend(Type _type, qreal _q, QDateTime _date_time);
+    QString get_letter_for_legend(Type _type);
 
 private:
 

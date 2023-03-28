@@ -105,7 +105,10 @@ void MainWindow::load_map(QGridLayout *&lay, QString map_theme, int projection)
     map->setProjection(projection);
     map->zoomView(1500);
     map->update();
+    layer->zoom_max=map->maximumZoom();
+    layer->zoom_min=map->minimumZoom();
     connect(map,SIGNAL(mouseMoveGeoPosition(QString)),SLOT(mouse_move_on_map(QString)));
+    connect(map,SIGNAL(zoomChanged(int)),this,SLOT(zoom_map(int)));
 }
 
 void MainWindow::create_button_input(AnimatedLabel* button)
@@ -132,5 +135,11 @@ void MainWindow::mouse_move_on_map(QString string)
         ui->statusbar->showMessage(QString("%1").arg(string));
     }
     else ui->statusbar->clearMessage();
+}
+
+void MainWindow::zoom_map(int zoom)
+{
+    layer->zoom = zoom;
+    map->update();
 }
 
