@@ -28,11 +28,11 @@ void MapLayer::draw_zone_list(GeoPainter* painter, QList<Ellipse> ellipse_list)
 {
     if (!draw_zone) return;
     painter->setPen(QPen(Qt::black, 2));
-    draw_legend(painter, GeoDataCoordinates(blast.lon, blast.lat), blast.legend);
+    draw_legend(painter, GeoDataCoordinates(blast.lon, blast.lat), blast.legend, -150);
     for (int i=0;i<ellipse_list.size();i++) {
         set_color_for_zone(painter, i);
         draw_ellipse(painter, blast, ellipse_list[i]);
-        draw_small_radius(painter, GeoDataCoordinates(blast.lon, blast.lat), ellipse_list[i]);
+//        draw_small_radius(painter, GeoDataCoordinates(blast.lon, blast.lat), ellipse_list[i]);
     }
 }
 
@@ -45,12 +45,13 @@ void MapLayer::set_painter_color(GeoPainter *painter, QColor main_color)
 void MapLayer::set_color_for_zone(GeoPainter *painter, int zone_index)
 {
     QList<QColor> color_list;
-    color_list<<QColor(255,0,0,0)<<QColor(0,0,255,0)<<QColor(0,255,0,0)<<QColor(150,75,0,0);
+    color_list<<QColor(255,0,0)<<QColor(0,0,255)<<QColor(0,255,0)<<QColor(150,75,0);
     set_painter_color(painter, color_list[zone_index]);
 }
 
 QVector<QPair<qreal,qreal>> MapLayer::get_ellipse_coords(qreal centerX, qreal centerY, qreal a, qreal b, qreal rotationAngle, int numPoints)
 {
+    if (numPoints<100) numPoints=100;
     QPair<qreal, qreal>offset_coords = get_coords_for_offset(centerX, centerY, b, rad_to_deg(rotationAngle));
     QVector<QPair<qreal,qreal>> coords;
     centerX = offset_coords.first;
@@ -93,9 +94,11 @@ void MapLayer::draw_small_radius(GeoPainter *painter, GeoDataCoordinates center,
     painter->drawPolygon(ring_polygon);
 }
 
-void MapLayer::draw_legend(GeoPainter *painter, GeoDataCoordinates center, QStringList legend)
+void MapLayer::draw_legend(GeoPainter *painter, GeoDataCoordinates center, QStringList legend, int x_offset)
 {
-    painter->drawText(center, legend.first(), zoom_convert(-100));
+    painter->drawText(center, legend[0], zoom_convert(x_offset));
+    painter->drawText(center, legend[1], zoom_convert(x_offset),-1);
+    painter->drawText(center, legend[2], zoom_convert(x_offset), -15);
 }
 
 qreal MapLayer::km_to_deg(qreal km_value, qreal lat_in_rad)
@@ -122,12 +125,9 @@ qreal MapLayer::rad_to_deg(qreal rad)
 
 int MapLayer::zoom_convert(int value)
 {
-    qDebug()<<qreal(zoom/zoom_max)*value<<zoom<<zoom_max<<value;
-    return int(qreal(zoom/zoom_max)*qreal(value));
-}
-
-qreal MapLayer::zoom_convert(qreal value)
-{
-    qDebug()<<zoom<<qreal(zoom/value);
-    return qreal(zoom/value);
+    qreal zoom_koef = qreal(zoom)/qreal(zoom_max);
+//    qreal zoom_koef = qreal(zoom_max)/qreal(zoom);
+    int offset = int(zoom_koef*qreal(value));
+    qDebug()<<"zoom_scale"<<offset;
+    return offset;
 }

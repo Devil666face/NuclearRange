@@ -45,11 +45,10 @@ private:
     qreal deg_to_rad(qreal deg);
     qreal rad_to_deg(qreal rad);
     int zoom_convert(int value);
-    qreal zoom_convert(qreal value);
     void draw_zone_list(GeoPainter* painter, QList<Ellipse> ellipse_list);
     void draw_ellipse(GeoPainter* painter, BlastMath blast, Ellipse ellipse);
     void draw_small_radius(GeoPainter* painter, GeoDataCoordinates center, Ellipse ellipse);
-    void draw_legend(GeoPainter* painter, GeoDataCoordinates center, QStringList legend);
+    void draw_legend(GeoPainter* painter, GeoDataCoordinates center, QStringList legend, int x_offset);
     void set_painter_color(GeoPainter* painter, QColor main_color);
     void set_color_for_zone(GeoPainter* painter, int zone_index);
     QVector<QPair<qreal,qreal>> get_ellipse_coords(qreal centerX, qreal centerY, qreal a, qreal b, qreal rotationAngle, int numPoints);

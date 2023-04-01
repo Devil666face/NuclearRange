@@ -37,10 +37,11 @@ public:
     int get_type_index();
     void print();
     void set(int _type_index, qreal _q, QDateTime _date_time, qreal _vh_wind, qreal _alfa_wind);
-    QStringList set_legend(Type _type, qreal _q, QDateTime _date_time);
-    QString get_letter_for_legend(Type _type);
 
 private:
+    QStringList set_legend(Type _type, qreal _q, QDateTime _date_time);
+    QString get_letter_for_legend(Type _type);
+    QString get_sepatarot_for_legend(QStringList legend);
 
 };
 

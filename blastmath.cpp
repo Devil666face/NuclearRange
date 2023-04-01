@@ -109,8 +109,10 @@ void BlastMath::set(int _type_index, qreal _q, QDateTime _date_time, qreal _vh_w
 QStringList BlastMath::set_legend(Type _type, qreal _q, QDateTime _date_time)
 {
     QStringList legend;
-    legend<<QString("%1-%2").arg(_q).arg(get_letter_for_legend(_type));
-    legend<<QString("%1.%2 %3.%4").arg(_date_time.time().hour()).arg(_date_time.time().minute()).arg(_date_time.date().day()).arg(_date_time.date().month());
+    legend<<QString("%1 - %2").arg(_q).arg(get_letter_for_legend(_type));
+    QString lower_string = _date_time.toString("hh:mm dd.MM");
+    legend<<lower_string<<lower_string;
+    legend[1] = get_sepatarot_for_legend(legend);
     return legend;
 }
 
@@ -129,5 +131,18 @@ QString BlastMath::get_letter_for_legend(Type _type)
         return "П";
     }
     return "Н";
+}
+
+QString BlastMath::get_sepatarot_for_legend(QStringList legend)
+{
+    int length = 1;
+    foreach (QString line, legend) {
+        if (line.length()>length) length=line.length();
+    }
+    QString separator;
+    for (int i=0;i<length-1;i++) {
+        separator.append("_");
+    }
+    return separator;
 }
 

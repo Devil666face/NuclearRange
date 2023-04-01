@@ -107,6 +107,7 @@ void MainWindow::load_map(QGridLayout *&lay, QString map_theme, int projection)
     map->update();
     layer->zoom_max=map->maximumZoom();
     layer->zoom_min=map->minimumZoom();
+    layer->zoom=map->zoom();
     connect(map,SIGNAL(mouseMoveGeoPosition(QString)),SLOT(mouse_move_on_map(QString)));
     connect(map,SIGNAL(zoomChanged(int)),this,SLOT(zoom_map(int)));
 }
