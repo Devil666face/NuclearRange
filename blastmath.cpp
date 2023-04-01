@@ -96,7 +96,7 @@ void BlastMath::print()
     }
 }
 
-void BlastMath::set(int _type_index, qreal _q, QDateTime _date_time, qreal _vh_wind, qreal _alfa_wind)
+void BlastMath::set_blast_params(int _type_index, qreal _q, QDateTime _date_time, qreal _vh_wind, qreal _alfa_wind)
 {
     type = set_type(_type_index);
     q = _q;

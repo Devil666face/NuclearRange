@@ -36,7 +36,7 @@ public:
     Type set_type(int index);
     int get_type_index();
     void print();
-    void set(int _type_index, qreal _q, QDateTime _date_time, qreal _vh_wind, qreal _alfa_wind);
+    void set_blast_params(int _type_index, qreal _q, QDateTime _date_time, qreal _vh_wind, qreal _alfa_wind);
 
 private:
     QStringList set_legend(Type _type, qreal _q, QDateTime _date_time);

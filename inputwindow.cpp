@@ -11,6 +11,7 @@ InputWindow::InputWindow(QWidget *parent) :
     init_weather_tableWidjet(ui->tableWidget_weater, blast.get_zone_id_for_q(q), blast.get_max_v_wind_index(q));
     create_button_enter(create_button(":/new/prefix1/icons/add.gif","Нажмите для добавления текущих параметров",64,ui->lay_enter));
     create_button_coor(create_button(":/new/prefix1/icons/coor.gif","Нажмите для выбора на карте координат взрыва",64,ui->lay_coor));
+    create_button_coor_work(create_button(":/new/prefix1/icons/coor.gif","Нажмите для выбора на карте координат места работ л/с",64,ui->lay_coor_work));
     set_dateTime(ui->dateTimeEdit);
 }
 
@@ -82,6 +83,11 @@ void InputWindow::create_button_coor(AnimatedLabel *button)
     connect(button, SIGNAL(clicked()), SLOT(on_pushButton_coor()));
 }
 
+void InputWindow::create_button_coor_work(AnimatedLabel *button)
+{
+    connect(button, SIGNAL(clicked()), SLOT(on_pushButton_coor_work()));
+}
+
 void InputWindow::set_max_q(Type type, QComboBox *&comboBox)
 {
     QStringList normal_q_range;
@@ -133,7 +139,7 @@ void InputWindow::on_pushButton_enter()
 {
     if (!check_coor(blast)) return;
     QList<QList<qreal>> value_list = get_values_from_tableWidget(ui->tableWidget_weater);
-    blast.set(ui->comboBox_type->currentIndex(), ui->comboBox_q->currentText().toDouble(), ui->dateTimeEdit->dateTime(), value_list[0][value_list[0].size()-1], 360-value_list[1][value_list[1].size()-1]);
+    blast.set_blast_params(ui->comboBox_type->currentIndex(), ui->comboBox_q->currentText().toDouble(), ui->dateTimeEdit->dateTime(), value_list[0][value_list[0].size()-1], 360-value_list[1][value_list[1].size()-1]);
 //    blast.set_type(ui->comboBox_type->currentIndex());
 //    blast.q = ui->comboBox_q->currentText().toDouble();
 //    blast.date_time = ui->dateTimeEdit->dateTime();
@@ -147,6 +153,11 @@ void InputWindow::on_pushButton_coor()
 {
     emit coor_button_push();
     this->hide();
+}
+
+void InputWindow::on_pushButton_coor_work()
+{
+
 }
 
 void InputWindow::on_comboBox_q_currentTextChanged(const QString &arg1)

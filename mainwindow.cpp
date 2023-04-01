@@ -49,12 +49,10 @@ void MainWindow::recive_blast_data_from_input_window(BlastMath _blast)
     blast.print();
     layer->blast=blast;
     layer->draw_zone=true;
-
 }
 
 void MainWindow::on_click_coor_button_in_input_window()
 {
-    qDebug()<<"Выберите координтаы";
     connect(map,SIGNAL(mouseClickGeoPosition(qreal,qreal,GeoDataCoordinates::Unit)),this,SLOT(get_coordibates_from_map(qreal,qreal,GeoDataCoordinates::Unit)));
 
 }
@@ -96,11 +94,9 @@ void MainWindow::load_map(QGridLayout *&lay, QString map_theme, int projection)
     foreach(RenderPlugin* plugin, map->renderPlugins())
         if(plugin->nameId() == "stars") plugin->setEnabled(false);
     map->setShowCities(true);
-
     layer = new MapLayer();
     map->addLayer(layer);
     lay->addWidget(map);
-
     map->centerOn(GeoDataCoordinates(37.61/57.3,55.75/57.3,GeoDataCoordinates::Radian));
     map->setProjection(projection);
     map->zoomView(1500);
