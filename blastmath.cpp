@@ -106,6 +106,136 @@ void BlastMath::set_blast_params(int _type_index, qreal _q, QDateTime _date_time
     legend = set_legend(type, _q, _date_time);
 }
 
+void BlastMath::set_work_params(int _t_enter, int _T_work, int _D_before, int _N_count, int _D_cloud, int _D_ground, int _t_d_nuclear, int _A_air)
+{
+    t_enter = _t_enter;
+    T_work = _T_work;
+    D_before = _D_before;
+    N_count = _N_count;
+    D_cloud = _D_cloud;
+    D_ground = _D_ground;
+    t_delta_nuclear = _t_d_nuclear;
+    A_air = _A_air;
+}
+
+QVector<QPair<qreal, qreal> > BlastMath::get_ellipse_coords(qreal centerX, qreal centerY, qreal a, qreal b, qreal rotationAngle, int numPoints)
+{
+    if (numPoints<100) numPoints=100;
+    QPair<qreal, qreal>offset_coords = get_coords_for_offset(centerX, centerY, b, rad_to_deg(rotationAngle));
+    QVector<QPair<qreal,qreal>> coords;
+    centerX = offset_coords.first;
+    centerY = offset_coords.second;
+    for (int i = 0; i < numPoints; i++) {
+        qreal angle = i * (2 * M_PI / numPoints);
+        qreal distance = a * b / sqrt(pow(b*cos(angle),2) + pow(a*sin(angle),2));
+        qreal x = distance * cos(angle);
+        qreal y = distance * sin(angle);
+        qreal newX = x*cos(rotationAngle) - y*sin(rotationAngle);
+        qreal newY = x*sin(rotationAngle) + y*cos(rotationAngle);
+        coords.push_back(QPair<qreal,qreal>(centerX + newX, centerY + newY));
+    }
+    return coords;
+}
+
+void BlastMath::work_math()
+{
+    K_rz = K_down*N_count;
+    K_zone = get_K_zone(K_rz, ellipse_list);
+    qreal D = get_D(danger_zone_index, K_zone, D_before, t_enter, T_work);
+    qDebug()<<D;
+}
+
+QPair<qreal, qreal> BlastMath::get_coords_for_offset(qreal x, qreal y, qreal distance, qreal angle)
+{
+    qreal x_offset = x+distance*cos(deg_to_rad(90+angle));
+    qreal y_offset = y+distance*sin(deg_to_rad(90+angle));
+    return QPair<qreal,qreal>(x_offset, y_offset);
+}
+
+qreal BlastMath::get_K_zone(qreal _K_rz, QList<Ellipse> _ellipse_list)
+{
+    danger_zone_index=-1;
+    foreach (Ellipse ellipse, _ellipse_list) {
+        QVector<QPair<qreal,qreal>> coord_list = get_ellipse_coords(rad_to_deg(lon), rad_to_deg(lat), km_to_deg(ellipse.width), km_to_deg(ellipse.length, lat), qreal(deg_to_rad(alfa_wind)), int(ellipse.length*2));
+        bool is_ellipse = is_point_in_ellipse(coord_list, rad_to_deg(work_lon), rad_to_deg(work_lat));
+        if (is_ellipse) danger_zone_index++;
+    }
+    switch (danger_zone_index) {
+    case -1:
+        return _K_rz/3.2;
+        break;
+    case 0:
+        return 3.2/_K_rz;
+        break;
+    case 1:
+        return 1.7/_K_rz;
+        break;
+    case 2:
+        return 1.8/_K_rz;
+        break;
+    case 3:
+        return 1.8/_K_rz;
+        break;
+    default:
+        break;
+    }
+
+}
+
+bool BlastMath::is_point_in_ellipse(QVector<QPair<qreal, qreal> > coord_list, qreal x, qreal y)
+{
+    bool is_inside = false;
+    for (int i = 0, j = coord_list.size() - 1; i < coord_list.size(); j = i++) {
+        qreal xi = coord_list[i].first;
+        qreal yi = coord_list[i].second;
+        qreal xj = coord_list[j].first;
+        qreal yj = coord_list[j].second;
+        if (((yi > y) != (yj > y)) &&
+            (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
+            is_inside = !is_inside;
+        }
+    }
+    return is_inside;
+}
+
+qreal BlastMath::get_D(int zone_index, qreal K_zone, int D_before, int x, int y)
+{
+    qreal D = 0.0;
+    switch (zone_index) {
+    case -1:
+        D=0;
+        break;
+    case 0:
+        D=x*54/15709+y*2749/15709;
+        break;
+    case 1:
+        D=x*30/172799+y*165599/172799;
+        break;
+    case 2:
+        D=x*-1470/172799+y*525599/172799;
+        break;
+    case 3:
+        D=x*-6280/15709+y*1697999/172799;
+        break;
+    default:
+        break;
+    }
+    if (D<1) D=1;
+    return D*K_zone+D_before;
+}
+
+//qreal BlastMath::get_range_between_two_point(qreal lon1, qreal lat1, qreal lon2, qreal lat2)
+//{
+//    double dlat = deg_to_rad(lat2 - lat1);
+//    double dlon = deg_to_rad(lon2 - lon1);
+//    double a = pow(sin(dlat / 2.0), 2.0) +
+//               cos(deg_to_rad(lat1)) * cos(deg_to_rad(lat2)) *
+//               pow(sin(dlon / 2.0), 2.0);
+//    double c = 2.0 * atan2(sqrt(a), sqrt(1.0 - a));
+//    double d = EARTH_RADIUS_KM * c;
+//    return d;
+//}
+
 QStringList BlastMath::set_legend(Type _type, qreal _q, QDateTime _date_time)
 {
     QStringList legend;
@@ -146,3 +276,24 @@ QString BlastMath::get_sepatarot_for_legend(QStringList legend)
     return separator;
 }
 
+qreal BlastMath::rad_to_deg(qreal rad)
+{
+    return qreal(rad*57.3);
+}
+
+qreal BlastMath::deg_to_rad(qreal deg)
+{
+    return qreal(deg/57.3);
+}
+
+qreal BlastMath::km_to_deg(qreal km_value, qreal lat_in_rad)
+{
+    qreal const METHER_TO_DEGREE_FACTOR = 1.0 / 111.3199;
+    qreal deg_to_km_factor = cos(rad_to_deg(lat_in_rad)*M_PI/180.0) * METHER_TO_DEGREE_FACTOR;
+    return qreal(km_value*deg_to_km_factor);
+}
+
+qreal BlastMath::km_to_deg(qreal km_value)
+{
+    return qreal(km_value/111.3199);
+}

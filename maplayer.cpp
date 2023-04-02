@@ -1,9 +1,12 @@
 #include "maplayer.h"
 #include "mainwindow.h"
 
-MapLayer::MapLayer():LayerInterface()
+MapLayer::MapLayer(int _zoom, int _zoom_max, int _zoom_min):LayerInterface()
 {
-
+    zoom=_zoom;
+    zoom_max=_zoom_max;
+    zoom_min=_zoom_min;
+    zoom_vector = get_zoom_vector(zoom_max, zoom_min);
 }
 
 bool MapLayer::render(GeoPainter* painter, ViewportParams* viewport,
@@ -34,6 +37,10 @@ void MapLayer::draw_zone_list(GeoPainter* painter, QList<Ellipse> ellipse_list)
         draw_ellipse(painter, blast, ellipse_list[i]);
 //        draw_small_radius(painter, GeoDataCoordinates(blast.lon, blast.lat), ellipse_list[i]);
     }
+    draw_point(painter, GeoDataCoordinates(blast.lon, blast.lat), ellipse_list.first(), QColor(0,0,0));
+    if (!draw_regimen) return;
+    painter->drawImage(GeoDataCoordinates(blast.work_lon, blast.work_lat), get_image(get_zoom_interval(zoom, zoom_vector),"zrdn"));
+
 }
 
 void MapLayer::set_painter_color(GeoPainter *painter, QColor main_color)
@@ -45,40 +52,14 @@ void MapLayer::set_painter_color(GeoPainter *painter, QColor main_color)
 void MapLayer::set_color_for_zone(GeoPainter *painter, int zone_index)
 {
     QList<QColor> color_list;
-    color_list<<QColor(255,0,0)<<QColor(0,0,255)<<QColor(0,255,0)<<QColor(150,75,0);
+    color_list<<QColor(0,0,255)<<QColor(0,255,0)<<QColor(255,0,0)<<QColor(0,0,0);
     set_painter_color(painter, color_list[zone_index]);
-}
-
-QVector<QPair<qreal,qreal>> MapLayer::get_ellipse_coords(qreal centerX, qreal centerY, qreal a, qreal b, qreal rotationAngle, int numPoints)
-{
-    if (numPoints<100) numPoints=100;
-    QPair<qreal, qreal>offset_coords = get_coords_for_offset(centerX, centerY, b, rad_to_deg(rotationAngle));
-    QVector<QPair<qreal,qreal>> coords;
-    centerX = offset_coords.first;
-    centerY = offset_coords.second;
-    for (int i = 0; i < numPoints; i++) {
-        qreal angle = i * (2 * M_PI / numPoints);
-        qreal distance = a * b / sqrt(pow(b*cos(angle),2) + pow(a*sin(angle),2));
-        qreal x = distance * cos(angle);
-        qreal y = distance * sin(angle);
-        qreal newX = x*cos(rotationAngle) - y*sin(rotationAngle);
-        qreal newY = x*sin(rotationAngle) + y*cos(rotationAngle);
-        coords.push_back(QPair<qreal,qreal>(centerX + newX, centerY + newY));
-    }
-    return coords;
-}
-
-QPair<qreal, qreal> MapLayer::get_coords_for_offset(qreal x, qreal y, qreal distance, qreal angle)
-{
-    qreal x_offset = x+distance*cos(deg_to_rad(90+angle));
-    qreal y_offset = y+distance*sin(deg_to_rad(90+angle));
-    return QPair<qreal,qreal>(x_offset, y_offset);
 }
 
 void MapLayer::draw_ellipse(GeoPainter *painter, BlastMath blast, Ellipse ellipse)
 {
     if ((blast.lon==0) && (blast.lat==0)) return;
-    QVector<QPair<qreal,qreal>> coord_list = get_ellipse_coords(rad_to_deg(blast.lon), rad_to_deg(blast.lat), km_to_deg(ellipse.width), km_to_deg(ellipse.length, blast.lat), qreal(deg_to_rad(blast.alfa_wind)), int(ellipse.length*2));
+    QVector<QPair<qreal,qreal>> coord_list = blast.get_ellipse_coords(rad_to_deg(blast.lon), rad_to_deg(blast.lat), blast.km_to_deg(ellipse.width), blast.km_to_deg(ellipse.length, blast.lat), qreal(deg_to_rad(blast.alfa_wind)), int(ellipse.length*2));
     GeoDataLinearRing ellipse_polygon;
     foreach (auto pair, coord_list) {
         ellipse_polygon.append(GeoDataCoordinates(pair.first, pair.second, 0, GeoDataCoordinates::Degree));
@@ -86,11 +67,20 @@ void MapLayer::draw_ellipse(GeoPainter *painter, BlastMath blast, Ellipse ellips
     painter->drawPolygon(ellipse_polygon);
 }
 
-void MapLayer::draw_small_radius(GeoPainter *painter, GeoDataCoordinates center, Ellipse ellipse)
+void MapLayer::draw_point(GeoPainter *painter, GeoDataCoordinates center, Ellipse ellipse, QColor main_color)
+{
+    painter->setPen(QPen(main_color, 2));
+    painter->setBrush(QBrush(QColor(0,0,0,0)));
+    draw_small_radius(painter, center, ellipse.length/50);
+    painter->setBrush(QBrush(QColor(main_color.red(),main_color.green(),main_color.blue(), 255)));
+    draw_small_radius(painter, center, ellipse.length/100);
+}
+
+void MapLayer::draw_small_radius(GeoPainter *painter, GeoDataCoordinates center, qreal radius)
 {
     if ((center.latitude()==0) && (center.longitude()==0)) return;
     GeoDataLinearRing ring_polygon;
-    for (qreal a=0.0;a<=360.0;a+=1.0) ring_polygon.append(center.moveByBearing(a/57.3,(ellipse.length/10)/6371));
+    for (qreal a=0.0;a<=360.0;a+=1.0) ring_polygon.append(center.moveByBearing(a/57.3,(radius)/6371));
     painter->drawPolygon(ring_polygon);
 }
 
@@ -101,33 +91,33 @@ void MapLayer::draw_legend(GeoPainter *painter, GeoDataCoordinates center, QStri
     painter->drawText(center, legend[2], zoom_convert(x_offset), -15);
 }
 
-qreal MapLayer::km_to_deg(qreal km_value, qreal lat_in_rad)
-{
-    qreal const METHER_TO_DEGREE_FACTOR = 1.0 / 111.3199;
-    qreal deg_to_km_factor = cos(rad_to_deg(lat_in_rad)*M_PI/180.0) * METHER_TO_DEGREE_FACTOR;
-    return qreal(km_value*deg_to_km_factor);
-}
-
-qreal MapLayer::km_to_deg(qreal km_value)
-{
-    return qreal(km_value/111.3199);
-}
-
-qreal MapLayer::deg_to_rad(qreal deg)
-{
-    return qreal(deg/57.3);
-}
-
-qreal MapLayer::rad_to_deg(qreal rad)
-{
-    return qreal(rad*57.3);
-}
-
 int MapLayer::zoom_convert(int value)
 {
     qreal zoom_koef = qreal(zoom)/qreal(zoom_max);
-//    qreal zoom_koef = qreal(zoom_max)/qreal(zoom);
     int offset = int(zoom_koef*qreal(value));
-    qDebug()<<"zoom_scale"<<offset;
     return offset;
+}
+
+QVector<qreal> MapLayer::get_zoom_vector(int max_zoom, int min_zoom)
+{
+    qreal zoom_step = (max_zoom-min_zoom)/7;
+    QVector <qreal> zoom_vector;
+    zoom_vector.append(min_zoom);
+    for (int i=1;i<8;i++)
+        zoom_vector.append(min_zoom+zoom_step*i);
+    return zoom_vector;
+}
+
+int MapLayer::get_zoom_interval(int zoom_value, QVector<qreal> zoom_vector)
+{
+    for (int i=0;i<zoom_vector.size();i++)
+    {
+        if (i==zoom_vector.size()-1) return i;
+        if ((zoom_vector[i]<=zoom_value)&&(zoom_value<zoom_vector[i+1])) return i;
+    }
+}
+
+QImage MapLayer::get_image(int interval, QString image_name)
+{
+    return QImage(QString(":/new/prefix1/icons/%1_%2.png").arg(image_name).arg(interval));
 }

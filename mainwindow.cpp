@@ -46,9 +46,14 @@ void MainWindow::recive_blast_data_from_input_window(BlastMath _blast)
 {
     blast = _blast;
     blast.ellipse_list = db->get_range_list(blast.get_type_index(), blast.q, blast.vh_wind);
-    blast.print();
+    blast.work_math();
+    qDebug()<<"danger_zone_index"<<blast.danger_zone_index;
+    if ((blast.danger_zone_index==-1) && check_coor(blast.work_lon, blast.work_lon)) {
+        QMessageBox::warning(this, "Внимание", "Точка стояния ЗРП находится вне зоны поражения ядерного взрыва.");
+    }
     layer->blast=blast;
-    layer->draw_zone=true;
+    if (check_coor(blast.lon, blast.lat)) layer->draw_zone=true;
+    if (check_coor(blast.work_lon, blast.work_lon)) layer->draw_regimen=true;
 }
 
 void MainWindow::on_click_coor_button_in_input_window()
@@ -62,7 +67,7 @@ void MainWindow::get_coordibates_from_map(qreal lon, qreal lat, GeoDataCoordinat
     GeoDataCoordinates coor(lon,lat,GeoDataCoordinates::Radian);
     QMessageBox *msgBox = new QMessageBox(QMessageBox::Information,
                                           "Сохранение",
-                                          QString("Координаты взрыва\nдолгота: %1°\nширота: %2°.\nДля повторного выбора нажмите нет.").arg(coor.longitude()*57.3).arg(coor.latitude()*57.3),
+                                          QString("Выбраны координаты\nдолгота: %1°\nширота: %2°.\nДля повторного выбора нажмите нет.").arg(coor.longitude()*57.3).arg(coor.latitude()*57.3),
                                           QMessageBox::Yes| QMessageBox::No);
     if(msgBox->exec() == QMessageBox::Yes)
     {
@@ -94,16 +99,14 @@ void MainWindow::load_map(QGridLayout *&lay, QString map_theme, int projection)
     foreach(RenderPlugin* plugin, map->renderPlugins())
         if(plugin->nameId() == "stars") plugin->setEnabled(false);
     map->setShowCities(true);
-    layer = new MapLayer();
+    map->zoomView(1500);
+    layer = new MapLayer(map->zoom(), map->maximumZoom(), map->minimumZoom());
     map->addLayer(layer);
     lay->addWidget(map);
     map->centerOn(GeoDataCoordinates(37.61/57.3,55.75/57.3,GeoDataCoordinates::Radian));
     map->setProjection(projection);
-    map->zoomView(1500);
+
     map->update();
-    layer->zoom_max=map->maximumZoom();
-    layer->zoom_min=map->minimumZoom();
-    layer->zoom=map->zoom();
     connect(map,SIGNAL(mouseMoveGeoPosition(QString)),SLOT(mouse_move_on_map(QString)));
     connect(map,SIGNAL(zoomChanged(int)),this,SLOT(zoom_map(int)));
 }
@@ -123,6 +126,12 @@ AnimatedLabel* MainWindow::create_button(QString icon_path, QString legend, int 
     AnimatedLabel* button = new AnimatedLabel(this, icon_path, legend, size, size);
     ui->mainToolBar->addWidget(button);
     return button;
+}
+
+bool MainWindow::check_coor(qreal lon, qreal lat)
+{
+    if ((lon!=-1) && (lat!=-1)) return true;
+    return false;
 }
 
 void MainWindow::mouse_move_on_map(QString string)

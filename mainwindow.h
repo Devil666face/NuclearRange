@@ -43,6 +43,8 @@ private:
     void create_button_settings(AnimatedLabel* button);
     AnimatedLabel* create_button(QString icon_path, QString legend, int size);
 
+    bool check_coor(qreal lon, qreal lat);
+
 private slots:
     void mouse_move_on_map(QString string);
     void zoom_map(int zoom);
@@ -54,8 +56,10 @@ private slots:
     void on_click_coor_button_in_input_window();
     void get_coordibates_from_map(qreal lon,qreal lat,GeoDataCoordinates::Unit);
 
+
 signals:
     void send_coor_to_input_window(qreal lon, qreal lat);
+
 
 };
 #endif // MAINWINDOW_H

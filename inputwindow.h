@@ -29,6 +29,7 @@ public:
 private:
     QComboBox* get_window_v_comboBox(int max_v_wind_index);
     QDoubleSpinBox* get_alfa_doubleSpinBox();
+    QString send_button;
     qreal get_value_from_cell_widget(QWidget* widget);
 
     void resize_table(QTableWidget *tableWidget);
@@ -40,7 +41,8 @@ private:
     void create_button_coor_work(AnimatedLabel* button);
     void set_max_q(Type type, QComboBox*& comboBox);
     QList<QList<qreal>> get_values_from_tableWidget(QTableWidget*& tableWidget);
-    bool check_coor(BlastMath blast);
+    bool check_coor(qreal lon, qreal lat, QString header, QString message);
+    void set_coor_in_ui(qreal lon, qreal lat, QDoubleSpinBox*& lon_spin, QDoubleSpinBox*& lat_spin);
 
 private slots:
     void on_comboBox_type_currentIndexChanged(int index);

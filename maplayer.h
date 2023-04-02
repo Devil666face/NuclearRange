@@ -31,30 +31,34 @@ class MapLayer : public LayerInterface
 
 
 public:
-    MapLayer();
+    MapLayer(int _zoom, int _zoom_max, int _zoom_min);
    ~MapLayer()override;
     int zoom;
     int zoom_max;
     int zoom_min;
+    QVector<qreal> zoom_vector;
     bool draw_zone = false;
+    bool draw_regimen = false;
     BlastMath blast;
 
 private:
-    qreal km_to_deg(qreal km_value, qreal lat_in_rad);
-    qreal km_to_deg(qreal km_value);
-    qreal deg_to_rad(qreal deg);
-    qreal rad_to_deg(qreal rad);
+    qreal deg_to_rad(qreal deg) {
+        return blast.deg_to_rad(deg);
+    };
+    qreal rad_to_deg(qreal rad) {
+        return blast.rad_to_deg(rad);
+    };
     int zoom_convert(int value);
+    QVector<qreal> get_zoom_vector(int max_zoom, int min_zoom);
+    int get_zoom_interval(int zoom_value, QVector<qreal> zoom_vector);
+    QImage get_image(int interval, QString image_name);
     void draw_zone_list(GeoPainter* painter, QList<Ellipse> ellipse_list);
     void draw_ellipse(GeoPainter* painter, BlastMath blast, Ellipse ellipse);
-    void draw_small_radius(GeoPainter* painter, GeoDataCoordinates center, Ellipse ellipse);
+    void draw_point(GeoPainter* painter, GeoDataCoordinates center, Ellipse ellipse, QColor main_color);
+    void draw_small_radius(GeoPainter* painter, GeoDataCoordinates center, qreal radius);
     void draw_legend(GeoPainter* painter, GeoDataCoordinates center, QStringList legend, int x_offset);
     void set_painter_color(GeoPainter* painter, QColor main_color);
     void set_color_for_zone(GeoPainter* painter, int zone_index);
-    QVector<QPair<qreal,qreal>> get_ellipse_coords(qreal centerX, qreal centerY, qreal a, qreal b, qreal rotationAngle, int numPoints);
-    QPair<qreal, qreal> get_coords_for_offset(qreal x, qreal y, qreal distance, qreal angle);
-
-
 };
 
 

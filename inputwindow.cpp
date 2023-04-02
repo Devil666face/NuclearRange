@@ -6,6 +6,7 @@ InputWindow::InputWindow(QWidget *parent) :
     ui(new Ui::InputWindow)
 {
     ui->setupUi(this);
+    ui->frame_4->hide();
     blast = BlastMath();
     qreal q = ui->comboBox_q->currentText().toDouble();
     init_weather_tableWidjet(ui->tableWidget_weater, blast.get_zone_id_for_q(q), blast.get_max_v_wind_index(q));
@@ -114,12 +115,12 @@ QList<QList<qreal> > InputWindow::get_values_from_tableWidget(QTableWidget *&tab
     return row_list;
 }
 
-bool InputWindow::check_coor(BlastMath blast)
+bool InputWindow::check_coor(qreal lon, qreal lat, QString header, QString message)
 {
-    if ((blast.lon!=-1) && (blast.lat!=-1)) return true;
+    if ((lon!=-1) && (lat!=-1)) return true;
     QMessageBox *msgBox = new QMessageBox(QMessageBox::Warning,
-                                          "Ввод координат",
-                                          "Координаты взрыва не заданы. Вы действительно хотите продолжить?",
+                                          header,
+                                          message,
                                           QMessageBox::Yes| QMessageBox::No);
     if(msgBox->exec() == QMessageBox::Yes)
     {
@@ -127,6 +128,12 @@ bool InputWindow::check_coor(BlastMath blast)
     }
     delete msgBox;
     return false;
+}
+
+void InputWindow::set_coor_in_ui(qreal lon, qreal lat, QDoubleSpinBox *&lon_spin, QDoubleSpinBox *&lat_spin)
+{
+    lon_spin->setValue(lon*57.3);
+    lat_spin->setValue(lat*57.3);
 }
 
 void InputWindow::on_comboBox_type_currentIndexChanged(int index)
@@ -137,27 +144,38 @@ void InputWindow::on_comboBox_type_currentIndexChanged(int index)
 
 void InputWindow::on_pushButton_enter()
 {
-    if (!check_coor(blast)) return;
+    if (!check_coor(blast.lon, blast.lat, "Ввод координат взрыва", "Координаты взрыва не заданы. Вы действительно хотите продолжить?")) return;
+    if (!check_coor(blast.work_lon, blast.work_lat, "Ввод координат ЗРП", "Координаты ЗРП не заданы. Вы действительно хотите продолжить?")) return;
     QList<QList<qreal>> value_list = get_values_from_tableWidget(ui->tableWidget_weater);
-    blast.set_blast_params(ui->comboBox_type->currentIndex(), ui->comboBox_q->currentText().toDouble(), ui->dateTimeEdit->dateTime(), value_list[0][value_list[0].size()-1], 360-value_list[1][value_list[1].size()-1]);
-//    blast.set_type(ui->comboBox_type->currentIndex());
-//    blast.q = ui->comboBox_q->currentText().toDouble();
-//    blast.date_time = ui->dateTimeEdit->dateTime();
-//    blast.vh_wind = value_list[0][value_list[0].size()-1];
-//    blast.alfa_wind = 360-value_list[1][value_list[1].size()-1];
+    blast.set_blast_params(ui->comboBox_type->currentIndex(),
+                           ui->comboBox_q->currentText().toDouble(),
+                           ui->dateTimeEdit->dateTime(),
+                           value_list[0][value_list[0].size()-1],
+                           360-value_list[1][value_list[1].size()-1]);
+    blast.set_work_params(ui->spinBox_t_enter->value(),
+                          ui->spinBox_T_work->value(),
+                          ui->spinBox_D_before->value(),
+                          ui->spinBox_N_count->value(),
+                          ui->spinBox_D_cloud->value(),
+                          ui->spinBox_D_ground->value(),
+                          ui->spinBox_t_delta_nuclear->value(),
+                          ui->spinBox_A_air->value());
     emit send_blast_data(blast);
     this->close();
 }
 
 void InputWindow::on_pushButton_coor()
 {
+    send_button = "coor";
     emit coor_button_push();
     this->hide();
 }
 
 void InputWindow::on_pushButton_coor_work()
 {
-
+    send_button = "work_coor";
+    emit coor_button_push();
+    this->hide();
 }
 
 void InputWindow::on_comboBox_q_currentTextChanged(const QString &arg1)
@@ -190,8 +208,22 @@ void InputWindow::on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime)
 
 void InputWindow::recive_coor_from_mainwidnow(qreal lon, qreal lat)
 {
-    blast.lon=lon;
-    blast.lat=lat;
-    ui->doubleSpinBox_lon->setValue(lon*57.3);
-    ui->doubleSpinBox_lat->setValue(lat*57.3);
+    if (send_button=="coor") {
+        blast.lon=lon;
+        blast.lat=lat;
+        set_coor_in_ui(lon, lat, ui->doubleSpinBox_lon, ui->doubleSpinBox_lat);
+        QList<QList<qreal>> value_list = get_values_from_tableWidget(ui->tableWidget_weater);
+        blast.set_blast_params(ui->comboBox_type->currentIndex(),
+                               ui->comboBox_q->currentText().toDouble(),
+                               ui->dateTimeEdit->dateTime(),
+                               value_list[0][value_list[0].size()-1],
+                               360-value_list[1][value_list[1].size()-1]);
+        emit send_blast_data(blast);
+    }
+    if (send_button=="work_coor") {
+        blast.work_lon=lon;
+        blast.work_lat=lat;
+        set_coor_in_ui(lon, lat, ui->doubleSpinBox_lon_work, ui->doubleSpinBox_lat_work);
+    }
 }
+

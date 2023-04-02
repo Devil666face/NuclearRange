@@ -108,7 +108,7 @@ public:
     {
         if (InputWindow->objectName().isEmpty())
             InputWindow->setObjectName(QString::fromUtf8("InputWindow"));
-        InputWindow->resize(924, 523);
+        InputWindow->resize(944, 523);
         centralwidget = new QWidget(InputWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         verticalLayout_4 = new QVBoxLayout(centralwidget);
@@ -289,6 +289,8 @@ public:
 
         spinBox_t_enter = new QSpinBox(groupBox_people);
         spinBox_t_enter->setObjectName(QString::fromUtf8("spinBox_t_enter"));
+        spinBox_t_enter->setMaximum(240);
+        spinBox_t_enter->setSingleStep(24);
         spinBox_t_enter->setValue(1);
 
         gridLayout_3->addWidget(spinBox_t_enter, 0, 1, 1, 1);
@@ -306,6 +308,8 @@ public:
 
         spinBox_T_work = new QSpinBox(groupBox_people);
         spinBox_T_work->setObjectName(QString::fromUtf8("spinBox_T_work"));
+        spinBox_T_work->setMaximum(720);
+        spinBox_T_work->setSingleStep(24);
         spinBox_T_work->setValue(3);
 
         gridLayout_3->addWidget(spinBox_T_work, 1, 1, 1, 1);
@@ -323,8 +327,8 @@ public:
 
         spinBox_D_before = new QSpinBox(groupBox_people);
         spinBox_D_before->setObjectName(QString::fromUtf8("spinBox_D_before"));
-        spinBox_D_before->setMaximum(100000);
-        spinBox_D_before->setSingleStep(10);
+        spinBox_D_before->setMaximum(1000000);
+        spinBox_D_before->setSingleStep(100);
         spinBox_D_before->setValue(100);
 
         gridLayout_3->addWidget(spinBox_D_before, 2, 1, 1, 1);
@@ -406,6 +410,7 @@ public:
 
         frame_4 = new QFrame(centralwidget);
         frame_4->setObjectName(QString::fromUtf8("frame_4"));
+        frame_4->setEnabled(true);
         frame_4->setFrameShape(QFrame::WinPanel);
         frame_4->setFrameShadow(QFrame::Raised);
         verticalLayout_3 = new QVBoxLayout(frame_4);
@@ -505,7 +510,7 @@ public:
         InputWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(InputWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 924, 26));
+        menubar->setGeometry(QRect(0, 0, 944, 26));
         InputWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(InputWindow);
         statusbar->setObjectName(QString::fromUtf8("statusbar"));
