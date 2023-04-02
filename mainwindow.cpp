@@ -46,6 +46,10 @@ void MainWindow::recive_blast_data_from_input_window(BlastMath _blast)
 {
     blast = _blast;
     blast.ellipse_list = db->get_range_list(blast.get_type_index(), blast.q, blast.vh_wind);
+    if (blast.ellipse_list.isEmpty()) {
+        QMessageBox::critical(this,"Ошибка",QString("Для выбранного значения q=%1 не существует табличного значения. Выберите значение больше.").arg(blast.q));
+        return;
+    }
     blast.work_math();
     qDebug()<<"danger_zone_index"<<blast.danger_zone_index;
     if ((blast.danger_zone_index==-1) && check_coor(blast.work_lon, blast.work_lon)) {
