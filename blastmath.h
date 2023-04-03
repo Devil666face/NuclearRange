@@ -6,6 +6,7 @@
 #include <QDateTime>
 #include <QPair>
 #include <cmath>
+#include "database.h"
 #include "ellipse.h"
 
 enum Type {
@@ -16,12 +17,12 @@ enum Type {
     Underground
 };
 
-
-
 class BlastMath
 {
 public:
     BlastMath();
+
+    database* db;
 
     Type type = Ground;
     qreal lon=-1;

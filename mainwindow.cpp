@@ -10,7 +10,6 @@ MainWindow::MainWindow(QWidget *parent)
     create_button_input(create_button(":/new/prefix1/icons/edit.gif","Нажмите для ввода исходных данных",64));
     create_button_settings(create_button(":/new/prefix1/icons/settings.gif","Нажмите для изменения параметров отображения карты",64));
     load_map(ui->map_lay,"earth/plain/plain.dgml",0);
-    db = new database(QString("database.sqlite3"));
 }
 
 void MainWindow::closeEvent(QCloseEvent *event)
@@ -45,9 +44,8 @@ void MainWindow::set_map_settings(QString map_theme, int projection)
 void MainWindow::recive_blast_data_from_input_window(BlastMath _blast)
 {
     blast = _blast;
-    blast.ellipse_list = db->get_range_list(blast.get_type_index(), blast.q, blast.vh_wind);
     if (blast.ellipse_list.isEmpty()) {
-        QMessageBox::critical(this,"Ошибка",QString("Для выбранного значения q=%1 не существует табличного значения. Выберите значение больше.").arg(blast.q));
+        QMessageBox::critical(this, "Ошибка", QString("Для выбранного значения q=%1 не существует табличного значения. Выберите значение больше.").arg(blast.q));
         return;
     }
     blast.work_math();
@@ -63,7 +61,6 @@ void MainWindow::recive_blast_data_from_input_window(BlastMath _blast)
 void MainWindow::on_click_coor_button_in_input_window()
 {
     connect(map,SIGNAL(mouseClickGeoPosition(qreal,qreal,GeoDataCoordinates::Unit)),this,SLOT(get_coordibates_from_map(qreal,qreal,GeoDataCoordinates::Unit)));
-
 }
 
 void MainWindow::get_coordibates_from_map(qreal lon, qreal lat, GeoDataCoordinates::Unit)
@@ -152,4 +149,3 @@ void MainWindow::zoom_map(int zoom)
     layer->zoom = zoom;
     map->update();
 }
-

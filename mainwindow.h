@@ -8,7 +8,6 @@
 #include "animatedlabel.h"
 #include "settingswindow.h"
 #include "blastmath.h"
-#include "database.h"
 #include "ellipse.h"
 
 QT_BEGIN_NAMESPACE
@@ -34,10 +33,6 @@ private:
     MapLayer* layer;
     MarbleWidget* map;
     void load_map(QGridLayout *&lay, QString map_theme, int projection);
-
-    database* db;
-
-
 //    buttons
     void create_button_input(AnimatedLabel* button);
     void create_button_settings(AnimatedLabel* button);

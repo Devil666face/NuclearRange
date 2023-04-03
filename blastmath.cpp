@@ -2,7 +2,7 @@
 
 BlastMath::BlastMath()
 {
-
+    db = new database(QString("database.sqlite3"));
 }
 
 int BlastMath::get_zone_id_for_q(qreal q)
@@ -104,6 +104,7 @@ void BlastMath::set_blast_params(int _type_index, qreal _q, QDateTime _date_time
     vh_wind = _vh_wind;
     alfa_wind = _alfa_wind;
     legend = set_legend(type, _q, _date_time);
+    ellipse_list = db->get_range_list(get_type_index(), q, vh_wind);
 }
 
 void BlastMath::set_work_params(int _t_enter, int _T_work, int _D_before, int _N_count, int _D_cloud, int _D_ground, int _t_d_nuclear, int _A_air)
@@ -142,7 +143,7 @@ void BlastMath::work_math()
     K_rz = K_down*N_count;
     K_zone = get_K_zone(K_rz, ellipse_list);
     qreal D = get_D(danger_zone_index, K_zone, D_before, t_enter, T_work);
-    qDebug()<<D;
+    qDebug()<<"D"<<D;
 }
 
 QPair<qreal, qreal> BlastMath::get_coords_for_offset(qreal x, qreal y, qreal distance, qreal angle)
@@ -200,26 +201,7 @@ bool BlastMath::is_point_in_ellipse(QVector<QPair<qreal, qreal> > coord_list, qr
 
 qreal BlastMath::get_D(int zone_index, qreal K_zone, int D_before, int x, int y)
 {
-    qreal D = 0.0;
-    switch (zone_index) {
-    case -1:
-        D=0;
-        break;
-    case 0:
-        D=x*54/15709+y*2749/15709;
-        break;
-    case 1:
-        D=x*30/172799+y*165599/172799;
-        break;
-    case 2:
-        D=x*-1470/172799+y*525599/172799;
-        break;
-    case 3:
-        D=x*-6280/15709+y*1697999/172799;
-        break;
-    default:
-        break;
-    }
+    qreal D = db->get_D_rad(zone_index, x, y);
     if (D<1) D=1;
     return D*K_zone+D_before;
 }

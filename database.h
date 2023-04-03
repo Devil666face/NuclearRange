@@ -18,8 +18,12 @@ public:
     QSqlQuery *query;
 
     QList<Ellipse> get_range_list(int type_index, qreal q, qreal v);
+    qreal get_D_rad(int zone_index, int t_start, int t_work);
 
-
+private:
+    int case_t_start(int t_start);
+    int case_t_work(int t_work);
+    int case_value(int value, QList<int> list_treshold);
 
 
 signals:
