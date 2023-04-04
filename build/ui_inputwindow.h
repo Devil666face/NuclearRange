@@ -35,7 +35,12 @@ class Ui_InputWindow
 public:
     QWidget *centralwidget;
     QVBoxLayout *verticalLayout_4;
-    QGridLayout *gridLayout_6;
+    QFrame *frame_2;
+    QVBoxLayout *verticalLayout_6;
+    QGroupBox *groupBox_weather;
+    QVBoxLayout *verticalLayout;
+    QTableWidget *tableWidget_weater;
+    QHBoxLayout *horizontalLayout;
     QFrame *frame;
     QVBoxLayout *verticalLayout_5;
     QGroupBox *groupBox_blast;
@@ -56,11 +61,6 @@ public:
     QDoubleSpinBox *doubleSpinBox_lat;
     QLabel *label_8;
     QGridLayout *lay_coor;
-    QFrame *frame_2;
-    QVBoxLayout *verticalLayout_6;
-    QGroupBox *groupBox_weather;
-    QVBoxLayout *verticalLayout;
-    QTableWidget *tableWidget_weater;
     QFrame *frame_3;
     QVBoxLayout *verticalLayout_2;
     QGroupBox *groupBox_people;
@@ -108,13 +108,34 @@ public:
     {
         if (InputWindow->objectName().isEmpty())
             InputWindow->setObjectName(QString::fromUtf8("InputWindow"));
-        InputWindow->resize(944, 523);
+        InputWindow->resize(715, 596);
         centralwidget = new QWidget(InputWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         verticalLayout_4 = new QVBoxLayout(centralwidget);
         verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
-        gridLayout_6 = new QGridLayout();
-        gridLayout_6->setObjectName(QString::fromUtf8("gridLayout_6"));
+        frame_2 = new QFrame(centralwidget);
+        frame_2->setObjectName(QString::fromUtf8("frame_2"));
+        frame_2->setFrameShape(QFrame::WinPanel);
+        frame_2->setFrameShadow(QFrame::Raised);
+        verticalLayout_6 = new QVBoxLayout(frame_2);
+        verticalLayout_6->setObjectName(QString::fromUtf8("verticalLayout_6"));
+        groupBox_weather = new QGroupBox(frame_2);
+        groupBox_weather->setObjectName(QString::fromUtf8("groupBox_weather"));
+        verticalLayout = new QVBoxLayout(groupBox_weather);
+        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        tableWidget_weater = new QTableWidget(groupBox_weather);
+        tableWidget_weater->setObjectName(QString::fromUtf8("tableWidget_weater"));
+
+        verticalLayout->addWidget(tableWidget_weater);
+
+
+        verticalLayout_6->addWidget(groupBox_weather);
+
+
+        verticalLayout_4->addWidget(frame_2);
+
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         frame = new QFrame(centralwidget);
         frame->setObjectName(QString::fromUtf8("frame"));
         frame->setFrameShape(QFrame::WinPanel);
@@ -248,28 +269,7 @@ public:
         verticalLayout_5->addWidget(groupBox_blast);
 
 
-        gridLayout_6->addWidget(frame, 0, 0, 1, 1);
-
-        frame_2 = new QFrame(centralwidget);
-        frame_2->setObjectName(QString::fromUtf8("frame_2"));
-        frame_2->setFrameShape(QFrame::WinPanel);
-        frame_2->setFrameShadow(QFrame::Raised);
-        verticalLayout_6 = new QVBoxLayout(frame_2);
-        verticalLayout_6->setObjectName(QString::fromUtf8("verticalLayout_6"));
-        groupBox_weather = new QGroupBox(frame_2);
-        groupBox_weather->setObjectName(QString::fromUtf8("groupBox_weather"));
-        verticalLayout = new QVBoxLayout(groupBox_weather);
-        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-        tableWidget_weater = new QTableWidget(groupBox_weather);
-        tableWidget_weater->setObjectName(QString::fromUtf8("tableWidget_weater"));
-
-        verticalLayout->addWidget(tableWidget_weater);
-
-
-        verticalLayout_6->addWidget(groupBox_weather);
-
-
-        gridLayout_6->addWidget(frame_2, 0, 1, 1, 1);
+        horizontalLayout->addWidget(frame);
 
         frame_3 = new QFrame(centralwidget);
         frame_3->setObjectName(QString::fromUtf8("frame_3"));
@@ -290,7 +290,7 @@ public:
         spinBox_t_enter = new QSpinBox(groupBox_people);
         spinBox_t_enter->setObjectName(QString::fromUtf8("spinBox_t_enter"));
         spinBox_t_enter->setMaximum(240);
-        spinBox_t_enter->setSingleStep(24);
+        spinBox_t_enter->setSingleStep(1);
         spinBox_t_enter->setValue(1);
 
         gridLayout_3->addWidget(spinBox_t_enter, 0, 1, 1, 1);
@@ -308,8 +308,9 @@ public:
 
         spinBox_T_work = new QSpinBox(groupBox_people);
         spinBox_T_work->setObjectName(QString::fromUtf8("spinBox_T_work"));
+        spinBox_T_work->setMinimum(1);
         spinBox_T_work->setMaximum(720);
-        spinBox_T_work->setSingleStep(24);
+        spinBox_T_work->setSingleStep(1);
         spinBox_T_work->setValue(3);
 
         gridLayout_3->addWidget(spinBox_T_work, 1, 1, 1, 1);
@@ -406,7 +407,10 @@ public:
         verticalLayout_2->addWidget(groupBox_people);
 
 
-        gridLayout_6->addWidget(frame_3, 1, 0, 1, 1);
+        horizontalLayout->addWidget(frame_3);
+
+
+        verticalLayout_4->addLayout(horizontalLayout);
 
         frame_4 = new QFrame(centralwidget);
         frame_4->setObjectName(QString::fromUtf8("frame_4"));
@@ -497,10 +501,7 @@ public:
         verticalLayout_3->addWidget(groupBox_radiation);
 
 
-        gridLayout_6->addWidget(frame_4, 1, 1, 1, 1);
-
-
-        verticalLayout_4->addLayout(gridLayout_6);
+        verticalLayout_4->addWidget(frame_4);
 
         lay_enter = new QGridLayout();
         lay_enter->setObjectName(QString::fromUtf8("lay_enter"));
@@ -510,7 +511,7 @@ public:
         InputWindow->setCentralWidget(centralwidget);
         menubar = new QMenuBar(InputWindow);
         menubar->setObjectName(QString::fromUtf8("menubar"));
-        menubar->setGeometry(QRect(0, 0, 944, 26));
+        menubar->setGeometry(QRect(0, 0, 715, 26));
         InputWindow->setMenuBar(menubar);
         statusbar = new QStatusBar(InputWindow);
         statusbar->setObjectName(QString::fromUtf8("statusbar"));
@@ -524,6 +525,7 @@ public:
     void retranslateUi(QMainWindow *InputWindow)
     {
         InputWindow->setWindowTitle(QCoreApplication::translate("InputWindow", "\320\230\321\201\321\205\320\276\320\264\320\275\321\213\320\265 \320\264\320\260\320\275\320\275\321\213\320\265", nullptr));
+        groupBox_weather->setTitle(QCoreApplication::translate("InputWindow", "\320\237\320\260\321\200\320\260\320\274\320\265\321\202\321\200\321\213 \320\274\320\265\321\202\320\265\320\276\320\261\321\201\321\202\320\260\320\275\320\276\320\262\320\272\320\270", nullptr));
         groupBox_blast->setTitle(QCoreApplication::translate("InputWindow", "\320\237\320\260\321\200\320\260\320\274\320\265\321\202\321\200\321\213 \320\262\320\267\321\200\321\213\320\262\320\260", nullptr));
         label->setText(QCoreApplication::translate("InputWindow", "\320\222\320\270\320\264 \320\262\320\267\321\200\321\213\320\262\320\260", nullptr));
         comboBox_type->setItemText(0, QCoreApplication::translate("InputWindow", "\320\222\320\276\320\267\320\264\321\203\321\210\320\275\321\213\320\271", nullptr));
@@ -557,12 +559,20 @@ public:
         label_7->setText(QCoreApplication::translate("InputWindow", "\302\260", nullptr));
         label_6->setText(QCoreApplication::translate("InputWindow", "\320\250\320\270\321\200\320\276\321\202\320\260", nullptr));
         label_8->setText(QCoreApplication::translate("InputWindow", "\302\260", nullptr));
-        groupBox_weather->setTitle(QCoreApplication::translate("InputWindow", "\320\237\320\260\321\200\320\260\320\274\320\265\321\202\321\200\321\213 \320\274\320\265\321\202\320\265\320\276\320\261\321\201\321\202\320\260\320\275\320\276\320\262\320\272\320\270", nullptr));
         groupBox_people->setTitle(QCoreApplication::translate("InputWindow", "\320\237\320\260\321\200\320\260\320\274\320\265\321\202\321\200\321\213 \320\273/\321\201", nullptr));
         label_9->setText(QCoreApplication::translate("InputWindow", "\320\222\321\200\320\265\320\274\321\217 \320\262\321\205\320\276\320\264\320\260 \320\273/\321\201 \320\262 \320\267\320\276\320\275\321\203\321\202\n"
 "\320\277\320\276\321\200\320\260\320\266\320\265\320\275\320\270\321\217 \320\277\320\276\321\201\320\273\320\265 \320\262\320\267\321\200\321\213\320\262\320\260", nullptr));
+#if QT_CONFIG(statustip)
+        spinBox_t_enter->setStatusTip(QCoreApplication::translate("InputWindow", "\320\234\320\260\320\272\321\201\320\270\320\274\320\260\320\273\321\214\320\275\320\276\320\265 \320\267\320\275\320\260\321\207\320\265\320\275\320\270\320\265 - 240\321\207 = 10\321\201\321\203\321\202", nullptr));
+#endif // QT_CONFIG(statustip)
         label_10->setText(QCoreApplication::translate("InputWindow", "\321\207", nullptr));
         label_11->setText(QCoreApplication::translate("InputWindow", "\320\222\321\200\320\265\320\274\321\217 \320\277\321\200\320\276\320\262\320\265\320\264\320\265\320\275\320\270\321\217 \321\200\320\260\320\261\320\276\321\202", nullptr));
+#if QT_CONFIG(tooltip)
+        spinBox_T_work->setToolTip(QString());
+#endif // QT_CONFIG(tooltip)
+#if QT_CONFIG(statustip)
+        spinBox_T_work->setStatusTip(QCoreApplication::translate("InputWindow", "\320\234\320\260\320\272\321\201\320\270\320\274\320\260\320\273\321\214\320\275\320\276\320\265 \320\267\320\275\320\260\321\207\320\265\320\275\320\270\320\265 - 720\321\207 = 30\321\201\321\203\321\202", nullptr));
+#endif // QT_CONFIG(statustip)
         label_12->setText(QCoreApplication::translate("InputWindow", "\321\207", nullptr));
         label_14->setText(QCoreApplication::translate("InputWindow", "\320\236\321\201\321\202\320\260\321\202\320\276\321\207\320\275\320\260\321\217 \320\264\320\276\320\267\320\260 \320\270\320\267\320\273\321\203\321\207\320\265\320\275\320\270\321\217", nullptr));
         label_13->setText(QCoreApplication::translate("InputWindow", "\321\200\320\260\320\264", nullptr));

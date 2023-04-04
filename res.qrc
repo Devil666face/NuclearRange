@@ -13,5 +13,6 @@
         <file>icons/zrdn_5.png</file>
         <file>icons/zrdn_6.png</file>
         <file>icons/zrdn_7.png</file>
+        <file>icons/result.gif</file>
     </qresource>
 </RCC>

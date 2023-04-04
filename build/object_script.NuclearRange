@@ -6,10 +6,12 @@ main.o
 mainwindow.o
 maplayer.o
 qcustomplot.o
+resultwindow.o
 settingswindow.o
 qrc_res.o
 moc_animatedlabel.o
 moc_inputwindow.o
 moc_mainwindow.o
 moc_qcustomplot.o
+moc_resultwindow.o
 moc_settingswindow.o

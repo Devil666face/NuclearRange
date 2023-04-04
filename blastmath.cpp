@@ -142,8 +142,43 @@ void BlastMath::work_math()
 {
     K_rz = K_down*N_count;
     K_zone = get_K_zone(K_rz, ellipse_list);
-    qreal D = get_D(danger_zone_index, K_zone, D_before, t_enter, T_work);
-    qDebug()<<"D"<<D;
+    if (danger_zone_index==-1) return;
+    D_rad = get_D(danger_zone_index, K_zone, D_before, t_enter, T_work);
+    kill_list = get_kill(D_rad, t_enter, T_work);
+}
+
+bool BlastMath::check_coor(qreal lon, qreal lat)
+{
+    if ((lon!=-1) && (lat!=-1)) return true;
+    return false;
+}
+
+bool BlastMath::check_coor_blast()
+{
+    return check_coor(lon, lat);
+}
+
+bool BlastMath::check_coor_work()
+{
+    return check_coor(work_lon, work_lat);
+}
+
+bool BlastMath::check_empty_kill_list()
+{
+    if (kill_list.isEmpty()) return true;
+    return false;
+}
+
+bool BlastMath::check_empty_ellipse_list()
+{
+    if (ellipse_list.isEmpty()) return true;
+    return false;
+}
+
+bool BlastMath::check_no_in_zone()
+{
+    if (danger_zone_index==-1) return true;
+    return false;
 }
 
 QPair<qreal, qreal> BlastMath::get_coords_for_offset(qreal x, qreal y, qreal distance, qreal angle)
@@ -206,17 +241,16 @@ qreal BlastMath::get_D(int zone_index, qreal K_zone, int D_before, int x, int y)
     return D*K_zone+D_before;
 }
 
-//qreal BlastMath::get_range_between_two_point(qreal lon1, qreal lat1, qreal lon2, qreal lat2)
-//{
-//    double dlat = deg_to_rad(lat2 - lat1);
-//    double dlon = deg_to_rad(lon2 - lon1);
-//    double a = pow(sin(dlat / 2.0), 2.0) +
-//               cos(deg_to_rad(lat1)) * cos(deg_to_rad(lat2)) *
-//               pow(sin(dlon / 2.0), 2.0);
-//    double c = 2.0 * atan2(sqrt(a), sqrt(1.0 - a));
-//    double d = EARTH_RADIUS_KM * c;
-//    return d;
-//}
+ QList<int> BlastMath::get_kill(qreal D_rad, int t_start, int t_work)
+{
+    QList<int> kill_list_for_D = db->get_kill_list_for_D(D_rad, t_start, t_work);
+    if (kill_list_for_D.isEmpty()) {
+        qDebug()<<"no kill";
+    }
+    qDebug()<<kill_list_for_D;
+    return kill_list_for_D;
+}
+
 
 QStringList BlastMath::set_legend(Type _type, qreal _q, QDateTime _date_time)
 {
@@ -279,3 +313,16 @@ qreal BlastMath::km_to_deg(qreal km_value)
 {
     return qreal(km_value/111.3199);
 }
+
+
+//qreal BlastMath::get_range_between_two_point(qreal lon1, qreal lat1, qreal lon2, qreal lat2)
+//{
+//    double dlat = deg_to_rad(lat2 - lat1);
+//    double dlon = deg_to_rad(lon2 - lon1);
+//    double a = pow(sin(dlat / 2.0), 2.0) +
+//               cos(deg_to_rad(lat1)) * cos(deg_to_rad(lat2)) *
+//               pow(sin(dlon / 2.0), 2.0);
+//    double c = 2.0 * atan2(sqrt(a), sqrt(1.0 - a));
+//    double d = EARTH_RADIUS_KM * c;
+//    return d;
+//}

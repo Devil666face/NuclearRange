@@ -2,6 +2,7 @@
 #define BLASTMATH_H
 #define EARTH_RADIUS_KM 6371.0
 #include <QMainWindow>
+#include <QMessageBox>
 #include <QDebug>
 #include <QDateTime>
 #include <QPair>
@@ -48,6 +49,8 @@ public:
     qreal K_zone = 0;
     qreal K_rz = 0;
     int danger_zone_index = -1;
+    qreal D_rad = 0;
+    QList<int> kill_list;
 
     int get_zone_id_for_q(qreal q);
     int get_max_v_wind_index(qreal q);
@@ -59,20 +62,28 @@ public:
     QVector<QPair<qreal,qreal>> get_ellipse_coords(qreal centerX, qreal centerY, qreal a, qreal b, qreal rotationAngle, int numPoints);
     void work_math();
 
+    bool check_coor_blast();
+    bool check_coor_work();
+    bool check_empty_kill_list();
+    bool check_empty_ellipse_list();
+    bool check_no_in_zone();
+
     qreal km_to_deg(qreal km_value, qreal lat_in_rad);
     qreal km_to_deg(qreal km_value);
     qreal rad_to_deg(qreal rad);
     qreal deg_to_rad(qreal deg);
 
 private:
+    bool check_coor(qreal lon, qreal lat);
     QStringList set_legend(Type _type, qreal _q, QDateTime _date_time);
     QString get_letter_for_legend(Type _type);
     QString get_sepatarot_for_legend(QStringList legend);
     QPair<qreal, qreal> get_coords_for_offset(qreal x, qreal y, qreal distance, qreal angle);
     qreal get_K_zone(qreal _K_rz, QList<Ellipse> _ellipse_list);
-//    qreal get_range_between_two_point(qreal lon1, qreal lat1, qreal lon2, qreal lat2);
     bool is_point_in_ellipse(QVector<QPair<qreal,qreal>> coord_list, qreal x, qreal y);
     qreal get_D(int zone_index, qreal K_zone, int D_before, int x, int y);
+    QList<int> get_kill(qreal D_rad, int t_start, int t_work);
+    //    qreal get_range_between_two_point(qreal lon1, qreal lat1, qreal lon2, qreal lat2);
 };
 
 #endif // BLASTMATH_H

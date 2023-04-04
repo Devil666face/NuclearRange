@@ -9,6 +9,7 @@
 #include "settingswindow.h"
 #include "blastmath.h"
 #include "ellipse.h"
+#include "resultwindow.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -27,6 +28,7 @@ private:
 //    windows
     InputWindow* inputwin;
     SettingsWindow* settingswin;
+    ResultWindow* resultwin;
     BlastMath blast;
     void show_window(QMainWindow* window);
 
@@ -36,9 +38,10 @@ private:
 //    buttons
     void create_button_input(AnimatedLabel* button);
     void create_button_settings(AnimatedLabel* button);
+    void create_button_result(AnimatedLabel* button);
     AnimatedLabel* create_button(QString icon_path, QString legend, int size);
 
-    bool check_coor(qreal lon, qreal lat);
+
 
 private slots:
     void mouse_move_on_map(QString string);
@@ -46,6 +49,7 @@ private slots:
     void closeEvent(QCloseEvent* event);
     void on_pushButton_input();
     void on_pushButton_settings();
+    void on_pushButton_result();
     void set_map_settings(QString map_theme, int projection);
     void recive_blast_data_from_input_window(BlastMath _blast);
     void on_click_coor_button_in_input_window();

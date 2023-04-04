@@ -38,7 +38,6 @@ qreal database::get_D_rad(int zone_index, int t_start, int t_work)
     query = new QSqlQuery(db);
     t_start = case_t_start(t_start);
     t_work = case_t_work(t_work);
-    qDebug()<<"case_t_start"<<t_start<<"case_t_work"<<t_work<<"zone_index"<<zone_index;
     QString sql_query = QString("SELECT rad "
                                 "FROM rad_hit WHERE "
                                 "zone_index=%1 AND "
@@ -53,37 +52,48 @@ qreal database::get_D_rad(int zone_index, int t_start, int t_work)
 int database::case_t_start(int t_start)
 {
     QList <int> t_start_list;
-    t_start_list
-    <<240
-      <<192
-        <<144
-          <<96
-            <<72
-              <<48
-                <<24
-                  <<21
-                    <<18
-                      <<15
-                        <<12
-                          <<10
-                            <<8
-                              <<6
-                                <<5
-                                  <<4
-                                    <<3
-                                      <<2
-                                        <<1;
+    t_start_list<<240<<192<<144<<96<<72<<48<<24<<21<<18<<15<<12<<10<<8<<6<<5<<4<<3<<2<<1;
     return case_value(t_start, t_start_list);
+}
 
+int database::case_t_start_for_d(int t_start, int case_d)
+{
+    QList <int> t_start_list_for_d;
+    t_start_list_for_d<<4<<2<<1;
+    if ((case_d==100) || (case_d==125) || (case_d==150) || (case_d==175) || (case_d==200)) {
+        if (t_start<=96) return 96;
+        else return -1;
+    }
+    else {
+        return case_value(t_start, t_start_list_for_d);
+    }
 }
 
 int database::case_t_work(int t_work)
 {
     QList <int> t_work_list;
     t_work_list<<720<<360<<240<<192<<144<<96<<72<<48<<24<<21<<18<<15<<12<<10<<8<<6<<5<<4<<3<<2<<1;
-
-
     return case_value(t_work, t_work_list);
+}
+
+int database::case_t_work_for_d(int t_work, int case_d)
+{
+    QList <int> t_work_list_for_d;
+    t_work_list_for_d<<96<<24<<12<<6<<3<<2<<1;
+    if (t_work>96) return -1;
+    if ((case_d==100) || (case_d==125) || (case_d==150)) {
+        return 96;
+    }
+    else {
+        return case_value(t_work, t_work_list_for_d);
+    }
+}
+
+int database::case_d_rad(int D_rad)
+{
+    QList <int> d_rad_list;
+    d_rad_list<<600<<500<<400<<300<<250<<200<<175<<150<<125<<100;
+    return case_value(D_rad, d_rad_list);
 }
 
 int database::case_value(int value, QList<int> list_treshold)
@@ -94,4 +104,26 @@ int database::case_value(int value, QList<int> list_treshold)
     }
     if (value>list_treshold.first()) _value=list_treshold.first();
     return _value;
+}
+
+QList<int> database::get_kill_list_for_D(qreal D_rad, qreal t_start, qreal t_work)
+{
+    QList<int> _kill_list_for_D;
+    D_rad = case_d_rad(D_rad);
+    t_start = case_t_start_for_d(t_start, D_rad);
+    t_work = case_t_work_for_d(t_work, D_rad);
+    if ((t_start==-1) || (t_work==-1)) return _kill_list_for_D;
+    qDebug()<<"case D rad"<<D_rad<<"t start"<<t_start<<"t work"<<t_work;
+    QString sql_query = QString("SELECT kill_3, kill_6, kill_12, kill_24, kill_336, kill_720, kill_letal "
+                                "FROM kill WHERE "
+                                "rad=%1 AND "
+                                "t_start=%2 AND "
+                                "t_work=%3;").arg(D_rad).arg(t_start).arg(t_work);
+    query->exec(sql_query);
+    while (query->next()) {
+        for (int i=0; i<7; i++) {
+            _kill_list_for_D.append(query->value(i).toInt());
+        };
+    }
+    return _kill_list_for_D;
 }

@@ -138,7 +138,8 @@ void InputWindow::set_coor_in_ui(qreal lon, qreal lat, QDoubleSpinBox *&lon_spin
 
 void InputWindow::on_comboBox_type_currentIndexChanged(int index)
 {
-    blast.set_type(index);
+    qDebug()<<index;
+    blast.type = blast.set_type(index);
     set_max_q(blast.type, ui->comboBox_q);
 }
 
@@ -227,3 +228,21 @@ void InputWindow::recive_coor_from_mainwidnow(qreal lon, qreal lat)
     }
 }
 
+
+void InputWindow::on_spinBox_t_enter_valueChanged(int arg1)
+{
+//    if (show_t_enter_warning) return;
+//    if (arg1>4) {
+//        QMessageBox::information(this,"Информация","Рекомендуемое значение времени входа для корректных вычислений от 1 до 4 часов");
+//        show_t_enter_warning=true;
+//    }
+}
+
+void InputWindow::on_spinBox_T_work_valueChanged(int arg1)
+{
+    if (show_t_work_warning) return;
+    if (arg1>96) {
+        QMessageBox::information(this,"Информация","Рекомендуемое значение продолжительности работ для корректных вычислений от 1 до 96 (4 сут.) часов");
+        show_t_enter_warning=true;
+    }
+}

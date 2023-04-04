@@ -30,6 +30,8 @@ private:
     QComboBox* get_window_v_comboBox(int max_v_wind_index);
     QDoubleSpinBox* get_alfa_doubleSpinBox();
     QString send_button;
+    bool show_t_enter_warning=false;
+    bool show_t_work_warning=false;
     qreal get_value_from_cell_widget(QWidget* widget);
 
     void resize_table(QTableWidget *tableWidget);
@@ -52,6 +54,10 @@ private slots:
     void on_comboBox_q_currentTextChanged(const QString &arg1);
     void on_dateTimeEdit_dateTimeChanged(const QDateTime &dateTime);
     void recive_coor_from_mainwidnow(qreal lon, qreal lat);
+
+    void on_spinBox_t_enter_valueChanged(int arg1);
+
+    void on_spinBox_T_work_valueChanged(int arg1);
 
 private:
     Ui::InputWindow *ui;

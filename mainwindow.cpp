@@ -8,6 +8,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->setupUi(this);
     ui->frame_pane->hide();
     create_button_input(create_button(":/new/prefix1/icons/edit.gif","Нажмите для ввода исходных данных",64));
+    create_button_result(create_button(":/new/prefix1/icons/result.gif","Нажмите для отображения резульатов вычислений",64));
     create_button_settings(create_button(":/new/prefix1/icons/settings.gif","Нажмите для изменения параметров отображения карты",64));
     load_map(ui->map_lay,"earth/plain/plain.dgml",0);
 }
@@ -34,6 +35,28 @@ void MainWindow::on_pushButton_settings()
     show_window(settingswin);
 }
 
+void MainWindow::on_pushButton_result()
+{
+    if (!blast.check_coor_blast()) {
+        QMessageBox::critical(this, "Ошибка", "Не заданы координаты точки взрыва.");
+        return;
+    }
+    if (!blast.check_coor_work()) {
+        QMessageBox::critical(this, "Ошибка", "Не заданы коориданты местоположения ЗРП.");
+        return;
+    }
+    if (blast.check_no_in_zone()) {
+        QMessageBox::information(this, "Результаты поражения", "Точка стояния ЗРП находится вне зоны поражения ядерного взрыва. Личному составу ничего не угрожает.");
+        return;
+    }
+    if (blast.check_empty_kill_list()) {
+        QMessageBox::information(this, "Результаты поражения", QString("С текущим значением времени входа t=%1 в зону поражения личному составу ничего не угрожает").arg(blast.t_enter));
+        return;
+    }
+    resultwin = new ResultWindow(this, blast);
+    show_window(resultwin);
+}
+
 void MainWindow::set_map_settings(QString map_theme, int projection)
 {
     delete map;
@@ -44,18 +67,17 @@ void MainWindow::set_map_settings(QString map_theme, int projection)
 void MainWindow::recive_blast_data_from_input_window(BlastMath _blast)
 {
     blast = _blast;
-    if (blast.ellipse_list.isEmpty()) {
-        QMessageBox::critical(this, "Ошибка", QString("Для выбранного значения q=%1 не существует табличного значения. Выберите значение больше.").arg(blast.q));
+    if (blast.check_empty_ellipse_list()) {
+        QMessageBox::critical(this, "Ошибка", QString("Для выбранного значения q=%1 не существует табличного значения. Попробуйте выбрать значение больше.").arg(blast.q));
         return;
     }
     blast.work_math();
-    qDebug()<<"danger_zone_index"<<blast.danger_zone_index;
-    if ((blast.danger_zone_index==-1) && check_coor(blast.work_lon, blast.work_lon)) {
+    if ((blast.check_no_in_zone()) && blast.check_coor_work()) {
         QMessageBox::warning(this, "Внимание", "Точка стояния ЗРП находится вне зоны поражения ядерного взрыва.");
     }
     layer->blast=blast;
-    if (check_coor(blast.lon, blast.lat)) layer->draw_zone=true;
-    if (check_coor(blast.work_lon, blast.work_lon)) layer->draw_regimen=true;
+    if (blast.check_coor_blast()) layer->draw_zone=true;
+    if (blast.check_coor_work()) layer->draw_regimen=true;
 }
 
 void MainWindow::on_click_coor_button_in_input_window()
@@ -122,17 +144,16 @@ void MainWindow::create_button_settings(AnimatedLabel *button)
     connect(button, SIGNAL(clicked()), SLOT(on_pushButton_settings()));
 }
 
+void MainWindow::create_button_result(AnimatedLabel *button)
+{
+    connect(button, SIGNAL(clicked()), SLOT(on_pushButton_result()));
+}
+
 AnimatedLabel* MainWindow::create_button(QString icon_path, QString legend, int size)
 {
     AnimatedLabel* button = new AnimatedLabel(this, icon_path, legend, size, size);
     ui->mainToolBar->addWidget(button);
     return button;
-}
-
-bool MainWindow::check_coor(qreal lon, qreal lat)
-{
-    if ((lon!=-1) && (lat!=-1)) return true;
-    return false;
 }
 
 void MainWindow::mouse_move_on_map(QString string)

@@ -24,6 +24,7 @@ SOURCES += \
     mainwindow.cpp \
     maplayer.cpp \
     qcustomplot.cpp \
+    resultwindow.cpp \
     settingswindow.cpp
 
 HEADERS += \
@@ -35,11 +36,14 @@ HEADERS += \
     mainwindow.h \
     maplayer.h \
     qcustomplot.h \
+    random.h \
+    resultwindow.h \
     settingswindow.h
 
 FORMS += \
     inputwindow.ui \
     mainwindow.ui \
+    resultwindow.ui \
     settingswindow.ui
 
 win32:RC_FILE = mainico.rc
